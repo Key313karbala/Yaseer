@@ -302,8 +302,53 @@
 
 <div class="container">
     <h2> قائمة الحجز </h2>
-
-    <form action="https://formspree.io/f/manybolw" method="POST">
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نموذج حجز</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            direction: rtl;
+            background-color: #f9f9f9;
+            padding: 20px;
+        }
+        form {
+            max-width: 600px;
+            margin: auto;
+            background: #fff;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input, select, textarea, button {
+            width: 100%;
+            margin-bottom: 15px;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        button {
+            background-color: #28a745;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+    </style>
+</head>
+<body>
+    <form id="bookingForm">
         <label for="name">الاسم الكامل:</label>
         <input type="text" id="name" name="name" required>
 
@@ -315,34 +360,69 @@
 
         <label for="service">نوع الخدمة:</label>
         <select id="service" name="service" required>
-            <option value="الحشوات الضوئية والمعدنية">الحشوات الضوئية والمعدنية</option>
-            <option value="جلسات تنظيف وإزالة التكلسات">جلسات تنظيف وإزالة التكلسات</option>
-            <option value="قلع الاسنان والجذور المتبقية">قلع الاسنان والجذور المتبقية</option>
-            <option value="تركيب اطقم متحركة">تركيب اطقم متحركة</option>
+            <option value="الحشوات الضوئية">الحشوات الضوئية</option>
+            <option value="جلسات تنظيف">جلسات تنظيف</option>
+            <option value="قلع الأسنان">قلع الأسنان</option>
+                        <option value="تركيب اطقم متحركة">تركيب اطقم متحركة</option> 
         </select>
-
-        <div class="day-select">
-            <label for="day">اليوم:</label>
-            <select id="day" name="day" required>
-                <option value="الأحد">الأحد</option>
-                <option value="الاثنين">الاثنين</option>
-            </select>
-        </div>
-
-        <div class="time-select">
-            <label for="time">الوقت:</label>
-            <select id="time" name="time" required>
-                <option value="8:30">8:30 صباحاً</option>
-                <option value="11:30">11:30 صباحاً</option>
-            </select>
-        </div>
 
         <label for="notes">ملاحظات:</label>
         <textarea id="notes" name="notes" rows="4" placeholder="أي ملاحظات إضافية..."></textarea>
 
-        <button type="submit">إرسال الحجز</button>
+        <button type="submit">إرسال</button>
     </form>
 
+    <script>
+        document.getElementById('bookingForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            const botToken = "8053315482:AAGEZdnd0lYUOLYkAe8kJMwSa13oxfW2A20";
+            const chatId = "7339992828";
+
+            // جمع البيانات
+            const name = document.getElementById('name').value.trim();
+            const age = document.getElementById('age').value.trim();
+            const phone = document.getElementById('phone').value.trim();
+            const service = document.getElementById('service').value;
+            const notes = document.getElementById('notes').value.trim();
+
+            // رسالة تليجرام
+            const message = `
+📋 *طلب حجز جديد* 📋
+*الاسم:* ${name}
+*العمر:* ${age}
+*رقم الهاتف:* ${phone}
+*الخدمة:* ${service}
+*ملاحظات:* ${notes || "لا توجد"}
+            `;
+
+            const url = `https://api.telegram.org/bot${botToken}/sendMessage`;
+
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        chat_id: chatId,
+                        text: message,
+                        parse_mode: 'Markdown'
+                    })
+                });
+
+                if (response.ok) {
+                    alert('✔️ تم إرسال الطلب بنجاح!');
+                    document.getElementById('bookingForm').reset();
+                } else {
+                    alert('❌ حدث خطأ أثناء الإرسال.');
+                }
+            } catch (error) {
+                alert('⚠️ حدث خطأ أثناء الاتصال.');
+            }
+        });
+    </script>
+</body>
+</html>
+    
     <div class="note">
         <p>جميع الخدمات مجانية باستثناء تركيب الأطقم المتحركة، حيث يختلف السعر حسب عدد الأسنان المفقودة.</p>
         <p>يرجى الحضور قبل الموعد المحدد للحجز.</p>
